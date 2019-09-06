@@ -1,0 +1,81 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+
+
+<dom-module id="dashboard-cards">
+  <template>
+
+    <style>
+      :host {
+        display: flex;
+      }
+	
+	
+	paper-input {
+		max-width: 400px;    
+	}
+	
+	paper-card {
+		--paper-card-header-color: darkcyan;
+		--paper-card-background-color: lightcyan;
+		margin: 0.2em;
+		width: 200px;
+		height: 350px
+	}
+    </style>
+    
+	<iron-ajax
+		id="cardsGetAjax"
+		url="https://artichoke.platform.bbva.com/cards/v0/cards"
+		handle-as="json"
+		last-response="{{cards}}"
+		loading="{{cardsLoading}}"
+	></iron-ajax>
+
+	<template is="dom-if" if="{{cardsLoading}}">
+		<paper-spinner active></paper-spinner>
+	</template>	
+
+
+	<template is="dom-repeat" items="[[cards.data]]" as="card">
+	
+		<paper-card width="200px" height="500px" image="[[card.images.0.url]]" >
+		  <div class="card-content" >		  
+			<paper-input label="Number" value="[[card.number]]" readonly></paper-input>
+			<paper-input label="Card type" value="[[card.cardType.name]]" readonly></paper-input>
+			<paper-input label="Amount" value="[[card.grantedCredits.0.amount ]]" readonly></paper-input>
+			
+		  </div>
+		</paper-card>	
+	
+	</template>
+	
+	
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+ class DashboardCards extends Polymer.Element {
+      static get is() { return 'dashboard-cards'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'dashboard-cards'
+          },
+			number : {
+				type: String
+			}
+        };
+      }
+    }
+
+    window.customElements.define(DashboardCards.is, DashboardCards);
+  </script>
+</dom-module>

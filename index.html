@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>FastTrack Polymer</title>
+    <meta name="description" content="test app ">
+
+<style>
+
+	.container{
+		width: 85%;
+		max-width: 740px;
+		margin: 0 auto;
+		margin-top: 1em;
+		background-color: gray;
+		padding: 3em;
+	}
+	
+	body{
+		background-color: #072146;
+	}
+</style>
+
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="/manifest.json">
+
+    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="import" href="/src/dashboard-app/dashboard-app.html">
+  </head>
+  <body>
+	
+    <div class="container">
+		<img src="src/assets/logo.png" />
+		<dashboard-app></dashboard-app>
+	</div>
+    
+  </body>
+</html>

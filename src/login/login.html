@@ -1,0 +1,150 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+
+
+<dom-module id="dashboard-login">
+	<template>
+  
+
+    <style>
+	:host {
+		display: flex;
+	}
+
+	.button-login{
+		background-color: #02a5a5;
+		color: white;
+	}
+	
+	paper-input {
+		max-width: 400px;    
+	}
+	
+    </style>
+    
+	<iron-ajax
+		id="grantingTicketAjax"
+		url="https://artichoke.platform.bbva.com/TechArchitecture/co/grantingTicket/V02"
+		method="post"
+		content-type="application/json"
+		handle-as="json"
+		body="[[loginRequest]]"
+		last-response="{{data}}"
+		loading="{{loading}}"
+		on-response="onLoginResponse"
+		on-error="onLoginError"		
+	></iron-ajax>
+
+		<paper-button class="button-login" on-click="showLogin" disabled="{{loading}}"><iron-icon icon="lock"> </iron-icon> Acceso  </paper-button>
+	
+		<paper-dialog id="dialog" >
+
+			<h2>Acceso</h2>
+				
+			<div>
+			
+				<paper-input label = "User Name" value="{{username}}">
+					<iron-icon icon = "account-circle"  prefix></iron-icon>
+				</paper-input>
+
+				<paper-input label = "Password" value="{{password}}" type="password">
+					<iron-icon icon = "lock-outline" prefix></iron-icon>
+				</paper-input>
+			
+			<div>
+			
+			<template is="dom-if" if="{{loading}}">
+				<paper-spinner active></paper-spinner>
+			</template>	
+			<span style="color:red">{{loginMessage}}</span>
+			<div class="buttons">
+				  <paper-button dialog-dismiss><iron-icon icon="close"></iron-icon> cancelar</paper-button>
+				  <paper-button on-click="login" disabled="{{loading}}"><iron-icon icon="check"></iron-icon> ingresar</paper-button>
+			</div>
+		</paper-dialog>	
+	
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+ class DashboardLogin extends Polymer.Element {
+      static get is() { return 'dashboard-login'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'dashboard-login'
+          },
+		  loginMessage: String,
+		  tsec: String,
+		  username: String,
+		  password: String,
+		  authenticated: {
+			type: Boolean,
+			value: false,
+			notify: true,
+			reflectToAttribute : true
+		  }
+        };
+      }
+	  
+	  showLogin(e){
+		this.$.dialog.toggle();
+	  }
+		  
+	  login(e){
+		this.authenticated = false;
+		this.tsec = "";
+		localStorage.setItem("tsec", "");
+		this.loginMessage = "";
+		this.loginRequest = {
+			"authentication": {
+				"userID": this.username,
+				"consumerID": "10000033",
+				"authenticationType": "02",
+				"authenticationData": [{
+					"idAuthenticationData": "password",
+					"authenticationData": [this.password]
+				}]
+			},
+			"backendUserRequest": {
+				"userId": "",
+				"accessCode": this.username,
+				"dialogId": ""
+			}
+		};
+		
+		this.$.grantingTicketAjax.generateRequest();
+	  }
+	  
+	  onLoginResponse(e, request){	  
+		console.log("tsec", request.xhr.getResponseHeader("tsec"));
+		if(request.xhr.getResponseHeader("tsec")){
+			this.tsec = request.xhr.getResponseHeader("tsec");
+			localStorage.setItem("tsec", this.tsec);
+			this.authenticated = true;
+			this.$.dialog.close();
+			this.dispatchEvent(new CustomEvent('login-request-success', {detail : {authenticated: true}, bubble: true, composed : true}));		
+		}else{
+			this.loginMessage = "Datos incorrectos (tsec not found!)";
+		}
+	  }
+	  
+	  onLoginError(e){		  
+		this.authenticated = false;
+		this.loginMessage = "Datos incorrectos";
+		this.dispatchEvent(new CustomEvent('login-request-error', {detail : {authenticated: false}, bubble: true, composed : true}));		
+	  }
+    }
+
+    window.customElements.define(DashboardLogin.is, DashboardLogin);
+  </script>
+</dom-module>

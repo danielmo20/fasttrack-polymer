@@ -1,0 +1,37 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+
+
+<dom-module id="dashboard-movements-control">
+  <template>
+    <style>
+      :host {
+        display: flex;
+      }
+	
+    </style>
+    
+    
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+ class DashboardMovementsControl extends Polymer.Element {
+      static get is() { return 'dashboard-movements-control'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'dashboard-movements-control'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(DashboardMovementsControl.is, DashboardMovementsControl);
+  </script>
+</dom-module>

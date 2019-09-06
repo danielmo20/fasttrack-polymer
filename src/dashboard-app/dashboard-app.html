@@ -1,0 +1,59 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/src/login/login.html">
+<link rel="import" href="/src/card/card.html">
+<link rel="import" href="/src/movements/movements.html">
+<link rel="import" href="/src/movements-control/movements-control.html">
+	
+<dom-module id="dashboard-app">
+  <template>
+    <style>
+      :host {
+        display: flex;
+      }     
+    </style>
+    
+	<dashboard-login id="login" on-login-request-success="showCards" on-login-request-error="loginError" if="{{!authenticated}}" ></dashboard-login>
+	<dashboard-cards id="cards"></dashboard-cards>
+	
+	</template>
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+	class DashboardApp extends Polymer.Element {
+	  static get is() { return 'dashboard-app'; }
+	  static get properties() {
+		return {
+		  prop1: {
+			type: String,
+			value: 'dashboard-app'
+		  },
+		  authenticated: {
+			type: Boolean,
+			value: false,
+			notify: true,
+			reflectToAttribute : true
+		  }
+		};
+	  }
+		showCards(e){
+			this.authenticated = e.detail.authenticated;
+			this.shadowRoot.getElementById('cards').$.cardsGetAjax.headers['tsec'] = localStorage.getItem("tsec");
+			this.shadowRoot.getElementById('cards').$.cardsGetAjax.generateRequest();
+		}
+		
+		loginError(e){
+			this.authenticated = e.detail.authenticated;
+		}
+	}
+
+    window.customElements.define(DashboardApp.is, DashboardApp);
+  </script>
+</dom-module>
